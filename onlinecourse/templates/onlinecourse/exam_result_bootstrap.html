@@ -1,0 +1,97 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Exam Results - {{ course.name }}</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+    <nav class="navbar navbar-light bg-light">
+        <a class="navbar-brand" href="{% url 'onlinecourse:index' %}">
+            Home
+        </a>
+        <span class="navbar-text">{{ course.name }}</span>
+    </nav>
+
+    <main class="container mt-5 mb-5">
+        {% if grade > 80 %}
+            <div class="alert alert-success">
+                <h2>Congratulations!</h2>
+                <p>You passed the mock exam.</p>
+            </div>
+        {% else %}
+            <div class="alert alert-warning">
+                <h2>Keep Practicing!</h2>
+                <p>You did not reach the passing score. Review your answers and try again.</p>
+            </div>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-body">
+                <h3>Exam Results</h3>
+                <p><strong>Course:</strong> {{ course.name }}</p>
+                <p><strong>Your Score:</strong> {{ grade }}%</p>
+                <p>
+                    <strong>Points Earned:</strong>
+                    {{ earned_points }} / {{ total_points }}
+                </p>
+            </div>
+        </div>
+
+        <h3>Review Your Answers</h3>
+
+        {% for result in exam_results %}
+            <div class="card mt-3">
+                <div class="card-header">
+                    <strong>
+                        Question {{ forloop.counter }}:
+                        {{ result.question.question_text }}
+                    </strong>
+
+                    {% if result.is_correct %}
+                        <span class="badge badge-success float-right">Correct</span>
+                    {% else %}
+                        <span class="badge badge-danger float-right">Incorrect</span>
+                    {% endif %}
+                </div>
+
+                <div class="card-body">
+                    <p>
+                        <strong>Your answer:</strong>
+                        {% if result.selected_choice %}
+                            {{ result.selected_choice.choice_text }}
+                        {% else %}
+                            Not answered
+                        {% endif %}
+                    </p>
+
+                    <p>
+                        <strong>Correct answer:</strong>
+                        {% if result.correct_choice %}
+                            {{ result.correct_choice.choice_text }}
+                        {% else %}
+                            No correct choice configured
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+        {% empty %}
+            <p>No questions were available for this exam.</p>
+        {% endfor %}
+
+        <a class="btn btn-primary mt-4"
+           href="{% url 'onlinecourse:course_details' pk=course.id %}">
+            Return to Course
+        </a>
+
+        <a class="btn btn-outline-secondary mt-4"
+           href="{% url 'onlinecourse:index' %}">
+            All Courses
+        </a>
+    </main>
+</body>
+</html>
